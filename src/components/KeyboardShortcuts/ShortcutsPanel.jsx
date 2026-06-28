@@ -11,6 +11,7 @@ export const ShortcutsPanel = memo(({ isOpen, onClose }) => {
     { keys: ['A'], action: 'Open Analytics View (paused only)', category: 'Views' },
     { keys: ['Esc'], action: 'Close All Panels', category: 'Navigation' },
     { keys: ['?'], action: 'Toggle This Help Panel', category: 'Help' },
+    { keys: ['Ctrl', 'S'], action: 'Snapshot Export (sorted + filtered)', category: 'Export' },
     { keys: ['Ctrl', 'E'], action: 'Export as CSV', category: 'Export' },
     { keys: ['Ctrl', 'J'], action: 'Export as JSON', category: 'Export' },
     { keys: ['Ctrl', 'K'], action: 'Clear All Filters', category: 'Filters' },

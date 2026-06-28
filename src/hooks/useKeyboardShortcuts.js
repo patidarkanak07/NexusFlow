@@ -11,6 +11,7 @@ export const useKeyboardShortcuts = ({
   onClearFilters,
   onNavigateRow,
   onLayoutToggle,
+  onSnapshotExport,
   isPaused,
   hasOpenPanel
 }) => {
@@ -24,6 +25,13 @@ export const useKeyboardShortcuts = ({
       if (e.code === 'Space' && !isTyping) {
         e.preventDefault();
         onPauseToggle();
+        return;
+      }
+
+      // Ctrl+S → Snapshot Export
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        onSnapshotExport();
         return;
       }
 
@@ -98,6 +106,7 @@ export const useKeyboardShortcuts = ({
     onClearFilters,
     onNavigateRow,
     onLayoutToggle,
+    onSnapshotExport,
     isPaused,
     hasOpenPanel
   ]);

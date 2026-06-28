@@ -24,6 +24,8 @@ import { useRowInspector } from './hooks/useRowInspector.js';
 import { useAnalytics } from './hooks/useAnalytics.js';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts.js';
 import { useExport } from './hooks/useExport.js';
+import { useSnapshotExport } from './hooks/useSnapshotExport.js';
+import { SnapshotTrigger, SnapshotSuccess } from './components/SnapshotExport/SnapshotExport.jsx';
 
 const RowInspector = React.lazy(() => import('./components/RowInspector/RowInspector.jsx'));
 const AnalyticsDashboard = React.lazy(() => import('./components/AnalyticsDashboard/AnalyticsDashboard.jsx'));
@@ -61,6 +63,12 @@ export default function App() {
     viewPool,
     anomalies
   });
+
+  const {
+    snapshotState,
+    triggerSnapshot,
+    cancelSnapshot
+  } = useSnapshotExport();
 
   useEffect(() => {
     if (lastExport) {
@@ -116,6 +124,7 @@ export default function App() {
         handleToggleLayout(key);
       }
     },
+    onSnapshotExport: triggerSnapshot,
     isPaused,
     hasOpenPanel: inspectorState.isOpen
   });
@@ -239,7 +248,20 @@ export default function App() {
             onOpenAnalytics={() => openAnalytics(stateEngine.masterData)}
           />
         </div>
-        <LayoutToggle layout={layout} onToggle={handleToggleLayout} />
+        <div className="flex items-center gap-3">
+          <SnapshotTrigger
+            snapshotState={snapshotState}
+            onTrigger={triggerSnapshot}
+            onCancel={cancelSnapshot}
+            viewPoolSize={viewPool.length}
+            sortConfig={stateEngine.sortConfig}
+            activeFilters={Object.entries(stateEngine.filters)
+              .filter(([, v]) => v?.length > 0)
+              .map(([k, v]) => ({ column: k, selectedValues: v }))}
+            searchQuery={stateEngine.searchQuery}
+          />
+          <LayoutToggle layout={layout} onToggle={handleToggleLayout} />
+        </div>
       </div>
 
       {/* Filters layout Persistence */}
@@ -446,6 +468,9 @@ export default function App() {
         show={showToast}
         onClose={() => setShowToast(false)}
       />
+
+      {/* Snapshot Success Toast Notification Overlay */}
+      <SnapshotSuccess snapshotState={snapshotState} />
     </div>
   );
 }
