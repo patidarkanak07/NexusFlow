@@ -1,0 +1,134 @@
+/* src/components/DataGrid/DataGrid.css */
+
+.grid-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.grid-header-scroller {
+  overflow-x: hidden;
+  background: #0f1624;
+  border-bottom: 1px solid var(--border-glow);
+  flex-shrink: 0;
+}
+
+.grid-header-row {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  position: relative;
+}
+
+.grid-column-header {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-right: 1px solid rgba(59, 130, 246, 0.12);
+  user-select: none;
+  cursor: pointer;
+  position: relative;
+  justify-content: space-between;
+}
+
+.grid-column-header:hover {
+  background: rgba(59, 130, 246, 0.05);
+  color: var(--text-primary);
+}
+
+.grid-column-header.sortable {
+  cursor: pointer;
+}
+
+.grid-column-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.grid-column-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grid-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.grid-viewport {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  background: #080d1a;
+}
+
+.grid-row {
+  display: flex;
+  height: 44px;
+  align-items: center;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.06);
+  position: absolute;
+  left: 0;
+  right: 0;
+  transition: background-color 0.15s;
+}
+
+.grid-row:hover {
+  background-color: rgba(59, 130, 246, 0.06) !important;
+}
+
+.grid-cell {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-right: 1px solid rgba(59, 130, 246, 0.04);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grid-cell.align-left {
+  justify-content: flex-start;
+}
+
+.grid-cell.align-right {
+  justify-content: flex-end;
+}
+
+.grid-cell.align-center {
+  justify-content: center;
+}
+
+.grid-cell-value-flash {
+  animation: numberFlash 0.5s ease-out forwards;
+}
+
+/* Col resize handle */
+.col-resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  cursor: col-resize;
+  z-index: 10;
+}

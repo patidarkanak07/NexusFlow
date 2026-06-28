@@ -1,0 +1,56 @@
+/* src/components/Filters/Filters.css */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-glow);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.filters-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-select-wrapper {
+  position: relative;
+}
+
+.filter-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(13, 20, 38, 0.6);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+  min-height: 32px;
+  align-items: center;
+}
+
+.clear-all-filters-btn {
+  font-size: 11px;
+  color: var(--accent-red);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.clear-all-filters-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}

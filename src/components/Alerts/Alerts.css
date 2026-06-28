@@ -1,0 +1,11 @@
+/* src/components/Alerts/Alerts.css */
+/* Status badge styles are in globals.css — this file holds additional alert-specific rules */
+
+.alert-row-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+}

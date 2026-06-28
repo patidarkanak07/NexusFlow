@@ -1,0 +1,8 @@
+/* src/components/SearchBar/SearchBar.css */
+/* Search wrapper, input and clear button details are in globals.css, this file covers extra fine tuning */
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}

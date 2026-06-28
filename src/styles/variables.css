@@ -1,0 +1,40 @@
+/* ════════════════════════════════════════
+   NEXUSFLOW CSS VARIABLES
+   ════════════════════════════════════════ */
+:root {
+  /* Backgrounds */
+  --bg-primary: #0a0f1e;
+  --bg-secondary: #0d1426;
+  --bg-card: #111827;
+  --bg-panel: #0f172a;
+  --bg-hover: #1e2a3d;
+
+  /* Accents */
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-green: #22c55e;
+  --accent-red: #ef4444;
+  --accent-purple: #8b5cf6;
+  --accent-amber: #f59e0b;
+
+  /* Text */
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* Borders */
+  --border-default: rgba(59, 130, 246, 0.15);
+  --border-glow: rgba(59, 130, 246, 0.3);
+  --border-active: rgba(59, 130, 246, 0.6);
+
+  /* Fonts */
+  --font-ui: 'Inter', sans-serif;
+  --font-data: 'JetBrains Mono', monospace;
+
+  /* Sizing */
+  --header-height: 80px;
+  --ticker-height: 36px;
+  --statusbar-height: 32px;
+  --row-height: 44px;
+  --kpi-height: 120px;
+}
