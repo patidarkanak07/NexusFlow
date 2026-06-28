@@ -120,7 +120,7 @@ export default function App() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            style={{ overflow: 'hidden' }}
+            style={{ overflow: layout.showFilterPanel ? 'visible' : 'hidden', zIndex: 40, position: 'relative' }}
           >
             <FilterPanel filters={filters} onFilterChange={setFilters} />
           </motion.div>

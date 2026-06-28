@@ -9,7 +9,7 @@ import { COUNTER_DURATION_MS } from '../../utils/constants.js';
 const AnimatedCounter = memo(({ value = 0, prefix = '', suffix = '', className = '' }) => {
   const [display, setDisplay] = useState(0);
   const animRef = useRef(null);
-  const prevValue = useRef(0);
+  const currentDisplayVal = useRef(0);
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const AnimatedCounter = memo(({ value = 0, prefix = '', suffix = '', className =
   }, []);
 
   useEffect(() => {
-    const start = prevValue.current;
+    const start = currentDisplayVal.current;
     const end = value;
     const startTime = performance.now();
 
@@ -33,12 +33,14 @@ const AnimatedCounter = memo(({ value = 0, prefix = '', suffix = '', className =
       const progress = Math.min(elapsed / COUNTER_DURATION_MS, 1);
       const eased = 1 - Math.pow(1 - progress, 3); // cubic ease-out
 
-      setDisplay(Math.floor(start + (end - start) * eased));
+      const nextVal = Math.floor(start + (end - start) * eased);
+      setDisplay(nextVal);
+      currentDisplayVal.current = nextVal;
 
       if (progress < 1) {
         animRef.current = requestAnimationFrame(animate);
       } else {
-        prevValue.current = end;
+        currentDisplayVal.current = end;
       }
     };
 
