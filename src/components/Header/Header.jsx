@@ -31,7 +31,7 @@ const TickerContent = memo(({ viewPool }) => {
 
 TickerContent.displayName = 'TickerContent';
 
-const Header = memo(({ totalRows, viewPool = [] }) => {
+const Header = memo(({ totalRows, viewPool = [], shortcutsButton, exportMenu }) => {
   const fps = useFPSMonitor();
   const memory = useMemoryMonitor();
   const [utcTime, setUtcTime] = useState('');
@@ -110,6 +110,9 @@ const Header = memo(({ totalRows, viewPool = [] }) => {
 
       {/* ─── Right: Stats ─── */}
       <div className="header-right">
+        {exportMenu}
+        {shortcutsButton}
+
         <div className="header-stat">
           <div className="header-stat-label">Nodes</div>
           <motion.div

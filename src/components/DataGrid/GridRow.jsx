@@ -1,5 +1,5 @@
 // src/components/DataGrid/GridRow.jsx
-import React, { memo, useRef, useEffect, useState } from 'react';
+import React, { memo, useRef, useEffect, useState, useMemo } from 'react';
 import {
   formatCurrency,
   formatPercent,
@@ -7,11 +7,16 @@ import {
   formatDate
 } from '../../utils/formatters.js';
 import AlertBadge from '../Alerts/AlertBadge.jsx';
+import { detectAnomalies } from '../../utils/anomalyRules.js';
 
 const GridRow = memo(({ row, index, columns, style, onRowHover, isInspecting, isPaused, onRowClick, onShowPauseTip }) => {
   const rowRef = useRef(null);
   const prevMetrics = useRef({});
   const [flashingCells, setFlashingCells] = useState({});
+
+  const rowAnomalies = useMemo(() => detectAnomalies(row), [row]);
+  const hasAnomaly = rowAnomalies.length > 0;
+  const isCritical = rowAnomalies.some(a => a.severity === 'critical');
 
   // Detect which numeric values have changed since last tick to trigger numberFlash animation
   useEffect(() => {
@@ -64,7 +69,7 @@ const GridRow = memo(({ row, index, columns, style, onRowHover, isInspecting, is
   return (
     <div
       ref={rowRef}
-      className={`grid-row ${statusClass} ${entryClass} ${isInspecting ? 'grid-row-inspecting' : ''} ${isPaused ? 'grid-row-paused-hover' : ''}`}
+      className={`grid-row ${statusClass} ${entryClass} ${isInspecting ? 'grid-row-inspecting' : ''} ${isPaused ? 'grid-row-paused-hover' : ''} ${isCritical ? 'row-critical-anomaly' : ''} ${hasAnomaly && !isCritical ? 'row-warning-anomaly' : ''}`}
       style={{
         ...style,
         backgroundColor: index % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent',
@@ -74,6 +79,14 @@ const GridRow = memo(({ row, index, columns, style, onRowHover, isInspecting, is
       onMouseLeave={(e) => onRowHover(e, null)}
       onClick={handleClick}
     >
+      {hasAnomaly && (
+        <span 
+          className="absolute left-[3px] z-10 text-[9px]"
+          title={rowAnomalies.map(a => a.message).join(', ')}
+        >
+          {isCritical ? '🚨' : '⚠️'}
+        </span>
+      )}
       {columns.map((col) => {
         let content = row[col.key];
 

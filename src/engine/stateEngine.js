@@ -2,6 +2,7 @@
 import { fuzzySearch } from './fuzzySearch.js';
 import { multiSort, toggleSort } from './sorter.js';
 import { MASTER_DATA_CAP, MASTER_DATA_TRIM } from '../utils/constants.js';
+import { detectAnomalies } from '../utils/anomalyRules.js';
 
 /**
  * Singleton StateEngine — central hub for all data flow.
@@ -27,6 +28,8 @@ class StateEngine {
       activeRobotsDeployed: [],
       globalCumulativeSavings: [],
     };
+    this.batchHistory = [];
+    this.detectedAnomalies = [];
     this.updateScheduled = false;
     this.lastUpdateTime = 0;
   }
@@ -81,6 +84,11 @@ class StateEngine {
     return () => this.subscribers.delete(callback);
   }
 
+  clearAnomalies() {
+    this.detectedAnomalies = [];
+    this._scheduleUpdate(true);
+  }
+
   getState() {
     return {
       viewPool: this.viewPool,
@@ -96,6 +104,8 @@ class StateEngine {
       filters: { ...this.filters },
       totalRows: this.masterData.length,
       filteredRows: this.viewPool.length,
+      batchHistory: [...this.batchHistory],
+      anomalies: [...this.detectedAnomalies],
     };
   }
 
@@ -108,6 +118,30 @@ class StateEngine {
       this.kpiCounters.activeRobotsDeployed += parseInt(row.robots_deployed) || 0;
       this.kpiCounters.globalCumulativeSavings += parseFloat(row.annual_savings_usd) || 0;
     });
+
+    // Detect anomalies in the batch rows
+    batch.forEach((row) => {
+      const rowAnomalies = detectAnomalies(row);
+      if (rowAnomalies.length > 0) {
+        this.detectedAnomalies.push(...rowAnomalies);
+      }
+    });
+
+    // Cap anomaly records
+    if (this.detectedAnomalies.length > 200) {
+      this.detectedAnomalies = this.detectedAnomalies.slice(-200);
+    }
+
+    // Add heartbeat metric
+    this.batchHistory.push({
+      timestamp: Date.now(),
+      rowCount: batch.length,
+      hasAnomaly: batch.some(r => detectAnomalies(r).length > 0)
+    });
+
+    if (this.batchHistory.length > 500) {
+      this.batchHistory = this.batchHistory.slice(-500);
+    }
 
     // Track sparkline history (last 20 snapshots)
     const pushHistory = (key) => {

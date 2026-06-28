@@ -11,11 +11,19 @@ import LayoutToggle from './components/ControlPanel/LayoutToggle.jsx';
 import DataGrid from './components/DataGrid/DataGrid.jsx';
 import StatusBar from './components/StatusBar/StatusBar.jsx';
 
+import PerformanceMonitor from './components/PerformanceMonitor/PerformanceMonitor.jsx';
+import StreamHeartbeat from './components/StreamHeartbeat/StreamHeartbeat.jsx';
+import { AnomalyPanel } from './components/AnomalyDetector/AnomalyDetector.jsx';
+import { ShortcutsButton, ShortcutsPanel } from './components/KeyboardShortcuts/KeyboardShortcuts.jsx';
+import { ExportMenu, ToastNotification } from './components/DataExport/DataExport.jsx';
+
 import { useStreamData } from './hooks/useStreamData.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 import { stateEngine } from './engine/stateEngine.js';
 import { useRowInspector } from './hooks/useRowInspector.js';
 import { useAnalytics } from './hooks/useAnalytics.js';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts.js';
+import { useExport } from './hooks/useExport.js';
 
 const RowInspector = React.lazy(() => import('./components/RowInspector/RowInspector.jsx'));
 const AnalyticsDashboard = React.lazy(() => import('./components/AnalyticsDashboard/AnalyticsDashboard.jsx'));
@@ -37,11 +45,80 @@ export default function App() {
     setSort,
     setFilters,
     setSearch,
+    batchHistory = [],
+    anomalies = [],
   } = useStreamData();
 
   const { inspectorState, openInspector, closeInspector } = useRowInspector();
   const { analyticsState, openAnalytics, closeAnalytics } = useAnalytics();
   const [toastMessage, setToastMessage] = React.useState('');
+
+  const [shortcutsOpen, setShortcutsOpen] = React.useState(false);
+  const [showToast, setShowToast] = React.useState(false);
+  const [toastSub, setToastSub] = React.useState('');
+
+  const { exportCSV, exportJSON, exportAnomalies, lastExport, clearLastExport } = useExport({
+    viewPool,
+    anomalies
+  });
+
+  useEffect(() => {
+    if (lastExport) {
+      setShowToast(true);
+      setToastSub(`Saved ${lastExport.count} records as ${lastExport.filename}`);
+      clearLastExport();
+    }
+  }, [lastExport, clearLastExport]);
+
+  const handleClearAnomalies = useCallback(() => {
+    stateEngine.clearAnomalies();
+  }, []);
+
+  const handleRowFocus = useCallback((projectId) => {
+    const targetRow = viewPool.find(r => r.project_id === projectId);
+    if (targetRow) {
+      openInspector(targetRow);
+    }
+  }, [viewPool, openInspector]);
+
+  useKeyboardShortcuts({
+    onPauseToggle: togglePause,
+    onSearchFocus: () => {
+      document.querySelector('.search-input')?.focus();
+    },
+    onAnalyticsOpen: () => {
+      if (isPaused) openAnalytics(stateEngine.masterData);
+    },
+    onCloseAll: () => {
+      closeInspector();
+      closeAnalytics();
+      setShortcutsOpen(false);
+    },
+    onExportCSV: exportCSV,
+    onExportJSON: exportJSON,
+    onClearFilters: () => setFilters({}),
+    onNavigateRow: (direction) => {
+      if (direction === 'prev') {
+        handlePrevRow();
+      } else {
+        handleNextRow();
+      }
+    },
+    onLayoutToggle: (num) => {
+      const keys = {
+        1: 'showKPIStrip',
+        2: 'showFilterPanel',
+        3: 'showGridWindow',
+        4: 'showAnalyticsPanel'
+      };
+      const key = keys[num];
+      if (key) {
+        handleToggleLayout(key);
+      }
+    },
+    isPaused,
+    hasOpenPanel: inspectorState.isOpen
+  });
 
   const handleShowPauseTip = useCallback((projectName) => {
     setToastMessage(`⏸ Pause stream to inspect "${projectName}"`);
@@ -117,7 +194,25 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-primary-bg relative bg-grid">
       {/* Cinematic entrance marquee scanline and logo pulse details */}
-      <Header totalRows={totalRows} viewPool={viewPool} />
+      <Header
+        totalRows={totalRows}
+        viewPool={viewPool}
+        shortcutsButton={
+          <ShortcutsButton onClick={() => setShortcutsOpen(prev => !prev)} />
+        }
+        exportMenu={
+          <ExportMenu
+            viewPool={viewPool}
+            anomalyCount={anomalies.filter(a => viewPool.some(row => row.project_id === a.projectId)).length}
+            onExportCSV={exportCSV}
+            onExportJSON={exportJSON}
+            onExportAnomalies={exportAnomalies}
+          />
+        }
+      />
+
+      {/* Stream heartbeat strip */}
+      <StreamHeartbeat batchHistory={batchHistory} isPaused={isPaused} />
 
       {/* KPI strip layout Persistence */}
       <AnimatePresence initial={false}>
@@ -323,6 +418,34 @@ export default function App() {
           </React.Suspense>
         )}
       </AnimatePresence>
+
+      {/* Performance Monitor Collapsible Widget */}
+      <PerformanceMonitor viewPoolSize={viewPool.length} />
+
+      {/* Smart Anomaly Detector Panel */}
+      <AnimatePresence>
+        {layout.showAnalyticsPanel && anomalies.length > 0 && (
+          <AnomalyPanel
+            anomalies={anomalies}
+            onClear={handleClearAnomalies}
+            onRowFocus={handleRowFocus}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Keyboard Shortcuts Dialog Help Panel */}
+      <ShortcutsPanel
+        isOpen={shortcutsOpen}
+        onClose={() => setShortcutsOpen(false)}
+      />
+
+      {/* Export Status Notification Banners */}
+      <ToastNotification
+        message="Export Successful"
+        sub={toastSub}
+        show={showToast}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 }
