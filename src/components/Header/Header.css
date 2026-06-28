@@ -9,7 +9,7 @@
   justify-content: space-between;
   padding: 0 20px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   flex-shrink: 0;
   box-shadow: 0 4px 24px rgba(0,0,0,0.4);
   z-index: 100;
