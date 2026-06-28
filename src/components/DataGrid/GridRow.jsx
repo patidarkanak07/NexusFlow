@@ -8,7 +8,7 @@ import {
 } from '../../utils/formatters.js';
 import AlertBadge from '../Alerts/AlertBadge.jsx';
 
-const GridRow = memo(({ row, index, columns, style, onRowHover }) => {
+const GridRow = memo(({ row, index, columns, style, onRowHover, isInspecting, isPaused, onRowClick, onShowPauseTip }) => {
   const rowRef = useRef(null);
   const prevMetrics = useRef({});
   const [flashingCells, setFlashingCells] = useState({});
@@ -53,16 +53,26 @@ const GridRow = memo(({ row, index, columns, style, onRowHover }) => {
   // Row entrance class
   const entryClass = row._isNew ? 'grid-row-new' : '';
 
+  const handleClick = () => {
+    if (!isPaused) {
+      onShowPauseTip?.(row.project_name);
+      return;
+    }
+    onRowClick?.(row);
+  };
+
   return (
     <div
       ref={rowRef}
-      className={`grid-row ${statusClass} ${entryClass}`}
+      className={`grid-row ${statusClass} ${entryClass} ${isInspecting ? 'grid-row-inspecting' : ''} ${isPaused ? 'grid-row-paused-hover' : ''}`}
       style={{
         ...style,
         backgroundColor: index % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent',
+        cursor: isPaused ? 'pointer' : 'default',
       }}
       onMouseEnter={(e) => onRowHover(e, row)}
       onMouseLeave={(e) => onRowHover(e, null)}
+      onClick={handleClick}
     >
       {columns.map((col) => {
         let content = row[col.key];

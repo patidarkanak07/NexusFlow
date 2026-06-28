@@ -13,7 +13,10 @@ const DataGrid = memo(({
   sortConfig = [],
   onSort,
   isPaused,
-  onClearFilters
+  onClearFilters,
+  inspectorState = { isOpen: false, selectedRow: null },
+  onRowClick,
+  onShowPauseTip
 }) => {
   const containerRef = useRef(null);
   const headerRef = useRef(null);
@@ -142,7 +145,7 @@ const DataGrid = memo(({
   }, [viewPool, scrollRange.start, scrollRange.end]);
 
   return (
-    <div className={`grid-wrapper ${isPaused ? 'grid-paused' : ''}`}>
+    <div className={`grid-wrapper ${isPaused ? 'grid-paused' : ''} ${inspectorState?.isOpen ? 'grid-dimmed' : ''}`}>
       {/* Table Header Wrapper */}
       <div className="grid-header-scroller" ref={headerRef}>
         <div className="grid-header-row" style={{ width: totalWidth }}>
@@ -180,6 +183,11 @@ const DataGrid = memo(({
               columns={columns}
               style={{ height: rowHeight, top: (index - scrollRange.start) * rowHeight }}
               onRowHover={handleRowHover}
+              isInspecting={inspectorState?.selectedRow?.project_id === row.project_id}
+              isPaused={isPaused}
+              onRowClick={onRowClick}
+              onShowPauseTip={onShowPauseTip}
+              className={isPaused ? 'grid-row-paused-hover' : ''}
             />
           ))}
         </div>

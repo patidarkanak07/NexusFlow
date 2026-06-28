@@ -14,6 +14,10 @@ import StatusBar from './components/StatusBar/StatusBar.jsx';
 import { useStreamData } from './hooks/useStreamData.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 import { stateEngine } from './engine/stateEngine.js';
+import { useRowInspector } from './hooks/useRowInspector.js';
+
+const RowInspector = React.lazy(() => import('./components/RowInspector/RowInspector.jsx'));
+
 
 export default function App() {
   const {
@@ -31,6 +35,32 @@ export default function App() {
     setFilters,
     setSearch,
   } = useStreamData();
+
+  const { inspectorState, openInspector, closeInspector } = useRowInspector();
+  const [toastMessage, setToastMessage] = React.useState('');
+
+  const handleShowPauseTip = useCallback((projectName) => {
+    setToastMessage(`⏸ Pause stream to inspect "${projectName}"`);
+    const timer = setTimeout(() => setToastMessage(''), 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handlePrevRow = useCallback(() => {
+    if (!inspectorState.selectedRow) return;
+    const currentIndex = viewPool.findIndex(row => row.project_id === inspectorState.selectedRow.project_id);
+    if (currentIndex > 0) {
+      openInspector(viewPool[currentIndex - 1]);
+    }
+  }, [viewPool, inspectorState.selectedRow, openInspector]);
+
+  const handleNextRow = useCallback(() => {
+    if (!inspectorState.selectedRow) return;
+    const currentIndex = viewPool.findIndex(row => row.project_id === inspectorState.selectedRow.project_id);
+    if (currentIndex !== -1 && currentIndex < viewPool.length - 1) {
+      openInspector(viewPool[currentIndex + 1]);
+    }
+  }, [viewPool, inspectorState.selectedRow, openInspector]);
+
 
   // Layout persistence toggle states
   const [layout, setLayout] = useLocalStorage('nexusflow-layout-v1', {
@@ -151,6 +181,9 @@ export default function App() {
                 onSort={setSort}
                 isPaused={isPaused}
                 onClearFilters={() => setFilters({})}
+                inspectorState={inspectorState}
+                onRowClick={openInspector}
+                onShowPauseTip={handleShowPauseTip}
               />
             </motion.div>
           )}
@@ -238,6 +271,38 @@ export default function App() {
         activeFiltersCount={activeFiltersCount}
         sortCount={sortConfig.length}
       />
+
+      {/* Row Inspector — rendered at App level */}
+      <AnimatePresence>
+        {inspectorState.isOpen && (
+          <React.Suspense fallback={null}>
+            <RowInspector
+              key="row-inspector"
+              rowData={inspectorState.selectedRow}
+              openedAt={inspectorState.openedAt}
+              pauseQueueSize={pauseQueueSize}
+              onClose={closeInspector}
+              onPrevRow={handlePrevRow}
+              onNextRow={handleNextRow}
+            />
+          </React.Suspense>
+        )}
+      </AnimatePresence>
+
+      {/* Non-blocking toast warning when stream is live */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            className="fixed bottom-12 right-6 bg-accent-amber bg-opacity-95 text-primary-bg px-4 py-2.5 rounded-lg shadow-2xl flex items-center gap-2 border border-accent-amber font-ui text-xs font-bold z-[2000]"
+            style={{ color: '#0a0f1e' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+          >
+            <span>⏸</span> {toastMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
