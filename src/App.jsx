@@ -13,6 +13,7 @@ import StatusBar from './components/StatusBar/StatusBar.jsx';
 
 import { useStreamData } from './hooks/useStreamData.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
+import { stateEngine } from './engine/stateEngine.js';
 
 export default function App() {
   const {
@@ -22,6 +23,7 @@ export default function App() {
     pauseQueueSize,
     isPaused,
     sortConfig,
+    filters,
     totalRows,
     filteredRows,
     togglePause,
@@ -42,7 +44,6 @@ export default function App() {
   useEffect(() => {
     if (window.initializeRpaStream) {
       const stopStream = window.initializeRpaStream((incomingBatch) => {
-        const { stateEngine } = require('./engine/stateEngine.js');
         stateEngine.process(incomingBatch);
       });
       return () => stopStream();
@@ -57,7 +58,6 @@ export default function App() {
   }, [setLayout]);
 
   // Compute active filters metric count
-  const { filters } = require('./engine/stateEngine.js').stateEngine;
   const activeFiltersCount = Object.values(filters || {}).reduce(
     (acc, val) => acc + (val?.length || 0),
     0

@@ -1,6 +1,6 @@
 // src/engine/stateEngine.js
 import { fuzzySearch } from './fuzzySearch.js';
-import { multiSort } from './sorter.js';
+import { multiSort, toggleSort } from './sorter.js';
 import { MASTER_DATA_CAP, MASTER_DATA_TRIM } from '../utils/constants.js';
 
 /**
@@ -59,29 +59,7 @@ class StateEngine {
   }
 
   setSort(key, isMulti) {
-    const { toggleSort } = require('./sorter.js');
-    // dynamic import to avoid circular — use inline logic instead
-    if (!isMulti) {
-      const existing = this.sortConfig.find((c) => c.key === key);
-      if (!existing) {
-        this.sortConfig = [{ key, direction: 'asc' }];
-      } else if (existing.direction === 'asc') {
-        this.sortConfig = [{ key, direction: 'desc' }];
-      } else {
-        this.sortConfig = [];
-      }
-    } else {
-      const idx = this.sortConfig.findIndex((c) => c.key === key);
-      if (idx === -1) {
-        this.sortConfig = [...this.sortConfig, { key, direction: 'asc' }];
-      } else if (this.sortConfig[idx].direction === 'asc') {
-        const next = [...this.sortConfig];
-        next[idx] = { key, direction: 'desc' };
-        this.sortConfig = next;
-      } else {
-        this.sortConfig = this.sortConfig.filter((c) => c.key !== key);
-      }
-    }
+    this.sortConfig = toggleSort(this.sortConfig, key, isMulti);
     this._computeViewPool();
     this._notifySubscribers();
   }
@@ -115,6 +93,7 @@ class StateEngine {
       pauseQueueSize: this.pauseQueue.length,
       isPaused: this.isPaused,
       sortConfig: [...this.sortConfig],
+      filters: { ...this.filters },
       totalRows: this.masterData.length,
       filteredRows: this.viewPool.length,
     };
