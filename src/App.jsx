@@ -15,8 +15,11 @@ import { useStreamData } from './hooks/useStreamData.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 import { stateEngine } from './engine/stateEngine.js';
 import { useRowInspector } from './hooks/useRowInspector.js';
+import { useAnalytics } from './hooks/useAnalytics.js';
 
 const RowInspector = React.lazy(() => import('./components/RowInspector/RowInspector.jsx'));
+const AnalyticsDashboard = React.lazy(() => import('./components/AnalyticsDashboard/AnalyticsDashboard.jsx'));
+
 
 
 export default function App() {
@@ -37,6 +40,7 @@ export default function App() {
   } = useStreamData();
 
   const { inspectorState, openInspector, closeInspector } = useRowInspector();
+  const { analyticsState, openAnalytics, closeAnalytics } = useAnalytics();
   const [toastMessage, setToastMessage] = React.useState('');
 
   const handleShowPauseTip = useCallback((projectName) => {
@@ -137,6 +141,7 @@ export default function App() {
             isPaused={isPaused}
             togglePause={togglePause}
             queueSize={pauseQueueSize}
+            onOpenAnalytics={() => openAnalytics(stateEngine.masterData)}
           />
         </div>
         <LayoutToggle layout={layout} onToggle={handleToggleLayout} />
@@ -301,6 +306,21 @@ export default function App() {
           >
             <span>⏸</span> {toastMessage}
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Analytics Dashboard (Bounty Task 2) */}
+      <AnimatePresence>
+        {analyticsState.isOpen && (
+          <React.Suspense fallback={null}>
+            <AnalyticsDashboard
+              isOpen={analyticsState.isOpen}
+              frozenData={analyticsState.frozenData}
+              frozenAt={analyticsState.frozenAt}
+              pauseQueueSize={pauseQueueSize}
+              onClose={closeAnalytics}
+            />
+          </React.Suspense>
         )}
       </AnimatePresence>
     </div>

@@ -1,0 +1,288 @@
+/* src/components/AnalyticsDashboard/AnalyticsDashboard.css */
+
+.analytics-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 1100;
+}
+
+.analytics-overlay {
+  position: fixed;
+  inset: 20px;
+  background: linear-gradient(135deg, #0a0f1e 0%, #0d1426 100%);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 16px;
+  box-shadow: 
+    0 0 60px rgba(59, 130, 246, 0.25),
+    0 0 120px rgba(6, 182, 212, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  z-index: 1200;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59,130,246,0.3) transparent;
+}
+
+.analytics-overlay::-webkit-scrollbar {
+  width: 6px;
+}
+.analytics-overlay::-webkit-scrollbar-thumb {
+  background: rgba(59,130,246,0.35);
+  border-radius: 3px;
+}
+
+.analytics-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 18px 24px;
+  background: rgba(10, 15, 30, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(59,130,246,0.2);
+  z-index: 20;
+  overflow: hidden;
+}
+
+.analytics-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.analytics-subtitle {
+  font-size: 9px;
+  color: #64748b;
+  font-weight: 400;
+  letter-spacing: 1px;
+  margin-left: 6px;
+}
+
+.analytics-meta {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+  font-size: 10px;
+  color: #64748b;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.analytics-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  padding: 16px 24px;
+}
+
+.summary-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 14px 18px;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 90px;
+}
+.summary-card:hover {
+  border-color: rgba(59,130,246,0.3);
+  background: rgba(59,130,246,0.05);
+  transform: translateY(-1px);
+}
+
+.summary-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-card-icon {
+  font-size: 16px;
+}
+
+.summary-card-label {
+  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #64748b;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.summary-card-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: #f1f5f9;
+  line-height: 1.2;
+}
+
+.summary-card-sub {
+  font-size: 9px;
+  color: #64748b;
+  font-family: 'Inter', sans-serif;
+  margin-top: 2px;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 0 24px 24px;
+}
+
+.chart-card {
+  background: rgba(255,255,255,0.01);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.3s;
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.chart-card-dot {
+  width: 6px;
+  height: 6px;
+  background: #3b82f6;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(59,130,246,0.6);
+}
+
+.chart-card-title {
+  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #64748b;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.3);
+  color: #3b82f6;
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+.export-btn:hover {
+  background: rgba(59,130,246,0.18);
+  border-color: rgba(59,130,246,0.5);
+}
+
+.analytics-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  transition: all 0.2s;
+}
+.analytics-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+
+/* Moving scan line for analytics dashboard */
+@keyframes analyticscan {
+  0%   { left: -100%; }
+  100% { left: 100%; }
+}
+
+.analytics-scanline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg, 
+    transparent, 
+    rgba(6, 182, 212, 0.8), 
+    transparent
+  );
+  animation: analyticscan 3s linear infinite;
+  pointer-events: none;
+}
+
+/* Responsive Grid layouts */
+@media (max-width: 1024px) {
+  .analytics-summary-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .analytics-overlay { inset: 0; border-radius: 0; }
+  .analytics-summary-grid { grid-template-columns: 1fr; }
+}
+
+/* ControlPanel analytics toggle glow active / disabled states */
+.analytics-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-ui);
+  letter-spacing: 0.04em;
+  transition: all 0.2s;
+  border: 1px solid;
+  cursor: pointer;
+}
+
+.analytics-btn.active {
+  background: rgba(6, 182, 212, 0.1);
+  border-color: rgba(6, 182, 212, 0.4);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.15);
+}
+
+.analytics-btn.disabled {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.analytics-btn-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 4px;
+  background: var(--accent-cyan);
+  border-radius: 4px;
+  font-size: 8px;
+  font-weight: 900;
+  color: #000;
+  margin-left: 2px;
+}
